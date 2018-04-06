@@ -98,7 +98,7 @@ def create_item():
 def update_item(item_id):
     #items = read_from_json()
     item = [item for item in items if item['id'] == item_id]
-    if not request.json or not 'description' or not 'brand' or not 'model' or not 'quantity' in request.json:
+    if not request.json or not 'description' in request.json  or not 'brand'in request.json or not 'model'in request.json or not 'quantity' in request.json:
         abort(400)
     if len(item) == 0:
         abort(404)

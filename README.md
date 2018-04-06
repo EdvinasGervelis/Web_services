@@ -1,6 +1,8 @@
 Darbą atliko Edvinas Gervelis. Web servisas - elektronikos parduotuvė.
 
-Servisas pasiekiamas 5000 portu.
+Servisas pasiekiamas localhost:5000/items.
+
+Galima atlikti GET POST PUT PATCH DELETE.
 
 Paleidomo komandos:
 

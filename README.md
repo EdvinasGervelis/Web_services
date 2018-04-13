@@ -12,6 +12,10 @@ Uzsakovo duomenys gali būti pasiekiami:
 
 localhost:5000/items/<item_id>/orders/<customer_id>
 
+Visi prekės užsakovai gali būti pasiekiami
+
+localhost:5000/items/<item_id>/orders
+
 Usakovo duomenys gali būti ištrinami atliekant DELETE adresu :
 
 localhost:5000/items/<item_id>/orders/<customer_id>

@@ -3,17 +3,21 @@ version: '3'
 services:
   web:
     build: .
-    command: python src/app.py runserver 0.0.0.0:5000
+    command: python src/app.py 
     volumes:
       - .:/code
     ports:
       - "5000:5000"
+    links:
+      - web2
       
   web2:
     build: .
-    command: python srvc2/app.py
+    command: python srvc2/app.py runserver 0.0.0.0:80
     ports:
       - "80:5000"
     volumes:
       - .:/code
+
+
 

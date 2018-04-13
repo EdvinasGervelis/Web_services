@@ -5,6 +5,7 @@ from flask import make_response
 from flask import request
 import json
 import requests
+import copy
 import urllib.request
 
 
@@ -41,7 +42,8 @@ items = [
         "quantity": 12,
         "orders": [
             "1"
-        ]
+        ],
+
     },
     {
         "brand": "Samsung",
@@ -55,7 +57,7 @@ items = [
     }
 ]
 
-
+# embedded
 
 @app.errorhandler(404)
 def not_found(error):
@@ -68,14 +70,34 @@ def bad_request(error):
 @app.route('/items', methods=['GET'])
 def get_items():
     #items = read_from_json()
-    return jsonify(items)
+    itemss = copy.deepcopy(items)
+    customersMas = []
+    if( request.args.get('embedded','') == 'orders'):
+        for item in itemss:
+            customersMas = []
+            for customer in item['orders']:
+                url = 'http://web2:80/visits/schedules/%s' %customer
+                r = requests.get(url)
+                customers = r.text
+                data = json.loads(customers)
+                customersMas.append(data)
+            item['orders'] = customersMas
+
+    return jsonify(itemss)
+
+@app.route('/items', methods = ['GET'])
+def search_embedded():
+    print ("labas")
+
+
+
 
 @app.route('/items/<int:item_id>/orders', methods=['GET'])
 def get_items_orders(item_id):
     customers = []
     custo = []
     msg= ""
-    url = "http://192.168.99.100:80/visits/schedules"
+    url = 'http://web2:80/visits/schedules'
     r = requests.get(url)
     customers = r.text
     data = json.loads(customers)
@@ -83,13 +105,13 @@ def get_items_orders(item_id):
         if item['id'] == item_id:
             for order in item['orders']:
                 try:
-                    url_test = "http://192.168.99.100:80/visits/schedules/%s" %order
+                    url_test = 'http://web2:80/visits/schedules/%s' %order
                     r_test = requests.get(url_test)
                     customers_test = r_test.text
                     data_test = json.loads(customers_test)
                 except ValueError:  # includes simplejson.decoder.JSONDecodeError
                     return not_found(404)
-                print(order)
+                # print(order)
                 for customer in data:
                     if order == customer['ID']:
                         custo.append(customer)
@@ -102,7 +124,7 @@ def get_item_orders_by_id(item_id, customer_id):
     custo = []
     msg= ""
     try:
-        url = "http://192.168.99.100:80/visits/schedules/%s" %customer_id
+        url = 'http://web2:80/visits/schedules/%s' %customer_id
         r = requests.get(url)
         customers = r.text
         data = json.loads(customers)
@@ -113,12 +135,12 @@ def get_item_orders_by_id(item_id, customer_id):
         if item['id'] == item_id:
             check_item = item
             for order in item['orders']:
-                print(order)
-                print(customer_id)
+                # print(order)
+                # print(customer_id)
                 if int(order) == customer_id:
-                    print ("labas")
+                    # print ("labas")
                     data = json.loads(customers)
-                    print (data.__class__.__name__)
+                    # print (data.__class__.__name__)
     if not data:
         return not_found(404)
     return jsonify(data)
@@ -149,7 +171,7 @@ def create_item():
 
     for order in request.json.get('orders', []):
         try:
-            url = "http://192.168.99.100:80/visits/schedules/%s" %order
+            url = 'http://web2:80/visits/schedules/%s' %order
             r = requests.get(url)
             customers = r.text
             data = json.loads(customers)
@@ -182,10 +204,10 @@ def update_item(item_id):
         abort(400)
 
 
-    print(request.json.get('orders', []))
+    # print(request.json.get('orders', []))
     for order in request.json.get('orders', []):
         try:
-            url = "http://192.168.99.100:80/visits/schedules/%s" %order
+            url = 'http://web2:80/visits/schedules/%s' %order
             r = requests.get(url)
             customers = r.text
             data = json.loads(customers)
@@ -226,7 +248,7 @@ def patch_item(item_id):
     if 'orders' in request.json:
         for order in request.json.get('orders', []):
             try:
-                url = "http://192.168.99.100:80/visits/schedules/%s" %order
+                url = 'http://web2:80/visits/schedules/%s' %order
                 r = requests.get(url)
                 customers = r.text
                 data = json.loads(customers)
@@ -234,10 +256,10 @@ def patch_item(item_id):
                 return not_found(404)
     item[0]['orders'] = request.json.get('orders', item[0]['orders'])
 
-    print(items)
+    # print(items)
 
     for item in items:
-        print(item)
+        # print(item)
         if items[item_id-1]['id'] == item['id']:
             items[item_id-1]['brand'] = item['brand']
             items[item_id-1]['description'] = item['description']
@@ -255,7 +277,7 @@ def delete_item(item_id):
     if len(item) == 0:
         abort(404)
     items.remove(item[0])
-    print(items)
+    # print(items)
     #write_to_json(items)
     return jsonify({'DELETED':'true'})
 

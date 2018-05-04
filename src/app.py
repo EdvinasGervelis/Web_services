@@ -162,7 +162,7 @@ def get_item(item_id):
                     r = requests.get(url)
                     customers = r.text
                     data = json.loads(customers)
-                    customersMas.append(data)
+                    customersMas.append(data[0])
                 item['orders'] = customersMas
     if len(item) == 0:
         msg = not_found(404)

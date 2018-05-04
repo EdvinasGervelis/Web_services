@@ -79,6 +79,7 @@ def get_items():
                 url = 'http://web2:80/visits/schedules/%s' %customer
                 r = requests.get(url)
                 customers = r.text
+                print(customers)
                 data = json.loads(customers)
                 customersMas.append(data)
             item['orders'] = customersMas
@@ -153,11 +154,22 @@ def get_item(item_id):
     msg = ""
     for it in items:
         if it['id'] == item_id:
-            item = it
+            # item = it
+            item = copy.deepcopy(it)
+            if( request.args.get('embedded','') == 'orders'):
+                customersMas = []
+                for customer in item['orders']:
+                    url = 'http://web2:80/visits/schedules/%s' %customer
+                    r = requests.get(url)
+                    customers = r.text
+                    data = json.loads(customers)
+                    customersMas.append(data)
+                item['orders'] = customersMas
     if len(item) == 0:
         msg = not_found(404)
     else:
         msg = jsonify(item)
+
     return msg
 
 

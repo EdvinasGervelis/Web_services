@@ -77,10 +77,13 @@ def get_items():
             customersMas = []
             for customer in item['orders']:
                 url = 'http://web2:80/visits/schedules/%s' %customer
-                r = requests.get(url)
-                customers = r.text
-                data = json.loads(customers)
-                customersMas.append(data[0])
+                try:
+                    r = requests.get(url)
+                    customers = r.text
+                    data = json.loads(customers)
+                    customersMas.append(data[0])
+                except requests.exceptions.ConnectionError:
+                    customersMas.append("null")
             item['orders'] = customersMas
 
     return jsonify(itemss)
@@ -159,10 +162,13 @@ def get_item(item_id):
                 customersMas = []
                 for customer in item['orders']:
                     url = 'http://web2:80/visits/schedules/%s' %customer
-                    r = requests.get(url)
-                    customers = r.text
-                    data = json.loads(customers)
-                    customersMas.append(data[0])
+                    try:
+                        r = requests.get(url)
+                        customers = r.text
+                        data = json.loads(customers)
+                        customersMas.append(data[0])
+                    except requests.exceptions.ConnectionError:
+                        customersMas.append("null")
                 item['orders'] = customersMas
     if len(item) == 0:
         msg = not_found(404)

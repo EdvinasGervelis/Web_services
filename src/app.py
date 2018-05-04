@@ -79,9 +79,8 @@ def get_items():
                 url = 'http://web2:80/visits/schedules/%s' %customer
                 r = requests.get(url)
                 customers = r.text
-                print(customers)
                 data = json.loads(customers)
-                customersMas.append(data)
+                customersMas.append(data[0])
             item['orders'] = customersMas
 
     return jsonify(itemss)
